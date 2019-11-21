@@ -1,5 +1,5 @@
-#![cfg(feature = "collections")]
-use bumpalo::{collections::Vec, Bump};
+use alloc_wg::{vec, vec::Vec};
+use bumpalo::Bump;
 use std::cell::Cell;
 
 #[test]
@@ -20,7 +20,7 @@ fn recursive_vecs() {
 
     struct Node<'a> {
         myself: Cell<Option<&'a Node<'a>>>,
-        edges: Cell<Vec<'a, &'a Node<'a>>>,
+        edges: Cell<Vec<&'a Node<'a>, &'a Bump>>,
     }
 
     let node1: &Node = b.alloc(Node {
@@ -33,8 +33,8 @@ fn recursive_vecs() {
     });
 
     node1.myself.set(Some(node1));
-    node1.edges.set(bumpalo::vec![in &b; node1, node1, node2]);
+    node1.edges.set(vec![in &b; node1, node1, node2]);
 
     node2.myself.set(Some(node2));
-    node2.edges.set(bumpalo::vec![in &b; node1, node2]);
+    node2.edges.set(vec![in &b; node1, node2]);
 }

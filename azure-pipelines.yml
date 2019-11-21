@@ -4,11 +4,11 @@ jobs:
   - job: tests
     displayName: "Tests"
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-18.04'
     steps:
       - template: ci/install-rust.yml
         parameters:
-          rust_version: stable
+          rust_version: nightly
       - template: ci/install-cargo-readme.yml
       - bash: |
           set -ex
@@ -29,7 +29,7 @@ jobs:
     steps:
       - template: ci/install-rust.yml
         parameters:
-          rust_version: stable
+          rust_version: nightly
       - bash: |
           set -ex
           cargo check --benches

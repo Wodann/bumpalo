@@ -1,3 +1,4 @@
+use alloc_wg::format;
 use criterion::*;
 
 #[derive(Default)]
@@ -24,10 +25,9 @@ fn alloc_with<T: Default>(n: usize) {
     }
 }
 
-#[cfg(feature = "collections")]
 fn format_realloc(bump: &bumpalo::Bump, n: usize) {
     let n = criterion::black_box(n);
-    let s = bumpalo::format!(in bump, "Hello {:.*}", n, "World! ");
+    let s = format!(in bump, "Hello {:.*}", n, "World! ");
     criterion::black_box(s);
 }
 

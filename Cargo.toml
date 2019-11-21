@@ -19,13 +19,15 @@ name = "benches"
 path = "benches/benches.rs"
 harness = false
 
+[dependencies]
+alloc-wg = { git = "https://github.com/TimDiekmann/alloc-wg" }
+
 [dev-dependencies]
 quickcheck = "0.8.2"
 criterion = "0.3.0"
 
 [features]
-default = ["collections"]
-collections = []
+default = []
 
 # This feature is only included for backwards compatibility and
 # no longer has any effect

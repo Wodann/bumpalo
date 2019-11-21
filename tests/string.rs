@@ -1,5 +1,5 @@
-#![cfg(feature = "collections")]
-use bumpalo::{collections::String, Bump};
+use alloc_wg::string::String;
+use bumpalo::Bump;
 use std::fmt::Write;
 
 #[test]

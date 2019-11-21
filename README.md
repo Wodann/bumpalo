@@ -6,7 +6,7 @@
 [![](https://docs.rs/bumpalo/badge.svg)](https://docs.rs/bumpalo/)
 [![](https://img.shields.io/crates/v/bumpalo.svg)](https://crates.io/crates/bumpalo)
 [![](https://img.shields.io/crates/d/bumpalo.svg)](https://crates.io/crates/bumpalo)
-[![Build Status](https://dev.azure.com/fitzgen/bumpalo/_apis/build/status/fitzgen.bumpalo?branchName=master)](https://dev.azure.com/fitzgen/bumpalo/_build/latest?definitionId=2&branchName=master)
+[![Build Status](https://dev.azure.com/95x/bumpalo/_apis/build/status/95th.bumpalo?branchName=master)](https://dev.azure.com/95x/bumpalo/_build/latest?definitionId=7&branchName=master)
 
 ![](https://github.com/fitzgen/bumpalo/raw/master/bumpalo.png)
 
@@ -65,13 +65,13 @@ assert!(scooter.scritches_required);
 
 ### Collections
 
-When the on-by-default `"collections"` feature is enabled, a fork of some of the
-`std` library's collections are available in the `collections` module. These
-collection types are modified to allocate their space inside `bumpalo::Bump`
-arenas.
+You can use a fork of some of the `std` library's collections that are available
+in the `alloc-wg` crate. These collection type are generic over the choice of allocator
+to allocate their space inside.
 
 ```rust
-use bumpalo::{Bump, collections::Vec};
+use bumpalo::Bump;
+use alloc_wg::vec::Vec;
 
 // Create a new bump arena.
 let bump = Bump::new();
