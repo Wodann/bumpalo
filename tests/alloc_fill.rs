@@ -1,10 +1,10 @@
+use alloc_wg::alloc::NonZeroLayout;
 use bumpalo::Bump;
-use std::alloc::Layout;
 
 #[test]
 fn alloc_slice_fill_zero() {
     let b = Bump::new();
-    let layout = Layout::new::<u8>();
+    let layout = NonZeroLayout::new::<u8>().unwrap();
 
     let ptr1 = b.alloc_layout(layout);
 

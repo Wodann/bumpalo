@@ -1,5 +1,5 @@
+use alloc_wg::alloc::NonZeroLayout;
 use bumpalo::Bump;
-use std::alloc::Layout;
 use std::mem;
 use std::usize;
 
@@ -68,7 +68,7 @@ fn oom_instead_of_bump_pointer_overflow() {
     // A size guaranteed to overflow the bump pointer.
     let size = usize::MAX - p + 1;
     let align = 1;
-    let layout = match Layout::from_size_align(size, align) {
+    let layout = match NonZeroLayout::from_size_align(size, align) {
         Err(e) => {
             // Return on error so that we don't panic and the test fails.
             eprintln!("Layout::from_size_align errored: {}", e);
@@ -86,11 +86,11 @@ fn force_new_chunk_fits_well() {
     let b = Bump::new();
 
     // Use the first chunk for something
-    b.alloc_layout(Layout::from_size_align(1, 1).unwrap());
+    b.alloc_layout(NonZeroLayout::from_size_align(1, 1).unwrap());
 
     // Next force allocation of some new chunks.
-    b.alloc_layout(Layout::from_size_align(100_001, 1).unwrap());
-    b.alloc_layout(Layout::from_size_align(100_003, 1).unwrap());
+    b.alloc_layout(NonZeroLayout::from_size_align(100_001, 1).unwrap());
+    b.alloc_layout(NonZeroLayout::from_size_align(100_003, 1).unwrap());
 }
 
 #[test]
@@ -99,7 +99,7 @@ fn alloc_with_strong_alignment() {
 
     // 64 is probably the strongest alignment we'll see in practice
     // e.g. AVX-512 types, or cache line padding optimizations
-    b.alloc_layout(Layout::from_size_align(4096, 64).unwrap());
+    b.alloc_layout(NonZeroLayout::from_size_align(4096, 64).unwrap());
 }
 
 #[test]
@@ -125,7 +125,7 @@ fn alloc_slice_clone() {
 #[test]
 fn small_size_and_large_align() {
     let b = Bump::new();
-    let layout = std::alloc::Layout::from_size_align(1, 0x1000).unwrap();
+    let layout = NonZeroLayout::from_size_align(1, 0x1000).unwrap();
     b.alloc_layout(layout);
 }
 
@@ -185,7 +185,7 @@ fn test_reset() {
 fn test_alignment() {
     for &alignment in &[2, 4, 8, 16, 32, 64] {
         let b = Bump::with_capacity(513);
-        let layout = std::alloc::Layout::from_size_align(alignment, alignment).unwrap();
+        let layout = NonZeroLayout::from_size_align(alignment, alignment).unwrap();
 
         for _ in 0..1024 {
             let ptr = b.alloc_layout(layout).as_ptr();
