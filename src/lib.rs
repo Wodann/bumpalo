@@ -112,7 +112,7 @@ use core::slice;
 use core::str;
 
 use alloc_wg::alloc::{
-    AllocErr, AllocRef, BuildAllocRef, DeallocRef, Global, NonZeroLayout, ReallocRef,
+    Abort, AllocErr, AllocRef, BuildAllocRef, DeallocRef, Global, NonZeroLayout, ReallocRef,
 };
 
 /// An arena to bump allocate into.
@@ -221,7 +221,7 @@ impl<ChunkAlloc: AllocRef> DeallocRef for &Bump<ChunkAlloc> {
         self
     }
 
-    unsafe fn dealloc(&mut self, ptr: NonNull<u8>, layout: NonZeroLayout) {
+    unsafe fn dealloc(self, ptr: NonNull<u8>, layout: NonZeroLayout) {
         // If the pointer is the last allocation we made, we can reuse the bytes,
         // otherwise they are simply leaked -- at least until somebody calls reset().
         if self.is_last_allocation(ptr) {
@@ -234,14 +234,14 @@ impl<ChunkAlloc: AllocRef> DeallocRef for &Bump<ChunkAlloc> {
 impl<ChunkAlloc: AllocRef> AllocRef for &Bump<ChunkAlloc> {
     type Error = AllocErr;
 
-    fn alloc(&mut self, layout: NonZeroLayout) -> Result<NonNull<u8>, Self::Error> {
-        Ok(self.alloc_layout(layout.into()))
+    fn alloc(self, layout: NonZeroLayout) -> Result<NonNull<u8>, Self::Error> {
+        Ok(self.alloc_layout(layout))
     }
 }
 
 impl<ChunkAlloc: AllocRef> ReallocRef for &Bump<ChunkAlloc> {
     unsafe fn realloc(
-        &mut self,
+        self,
         ptr: NonNull<u8>,
         old_layout: NonZeroLayout,
         new_layout: NonZeroLayout,
@@ -295,6 +295,8 @@ impl<ChunkAlloc: AllocRef> ReallocRef for &Bump<ChunkAlloc> {
         }
     }
 }
+
+impl<ChunkAlloc: AllocRef> Abort for &Bump<ChunkAlloc> {}
 
 // `Bump`s are safe to send between threads because nothing aliases its owned
 // chunks until you start allocating from it. But by the time you allocate from
@@ -1035,7 +1037,7 @@ impl<ChunkAlloc: AllocRef> Bump<ChunkAlloc> {
             let data = f.as_ref().data;
             let layout = f.as_ref().layout;
 
-            let mut chunk_alloc = self
+            let chunk_alloc = self
                 .chunk_build_alloc
                 .borrow_mut()
                 .build_alloc_ref(data, Some(layout));
@@ -1237,7 +1239,7 @@ mod tests {
 
             // `realloc` doesn't shrink allocations that aren't "worth it".
             let layout = NonZeroLayout::from_size_align(100, 1).unwrap();
-            let p = b.alloc_layout(layout.into());
+            let p = b.alloc_layout(layout);
             let q = (&b)
                 .realloc(p, layout, NonZeroLayout::from_size_align(51, 1).unwrap())
                 .unwrap();
@@ -1246,7 +1248,7 @@ mod tests {
 
             // `realloc` will shrink allocations that are "worth it".
             let layout = NonZeroLayout::from_size_align(100, 1).unwrap();
-            let p = b.alloc_layout(layout.into());
+            let p = b.alloc_layout(layout);
             let q = (&b)
                 .realloc(p, layout, NonZeroLayout::from_size_align(50, 1).unwrap())
                 .unwrap();
@@ -1255,7 +1257,7 @@ mod tests {
 
             // `realloc` will reuse the last allocation when growing.
             let layout = NonZeroLayout::from_size_align(10, 1).unwrap();
-            let p = b.alloc_layout(layout.into());
+            let p = b.alloc_layout(layout);
             let q = (&b)
                 .realloc(p, layout, NonZeroLayout::from_size_align(11, 1).unwrap())
                 .unwrap();
@@ -1265,7 +1267,7 @@ mod tests {
             // `realloc` will allocate a new chunk when growing the last
             // allocation, if need be.
             let layout = NonZeroLayout::from_size_align(1, 1).unwrap();
-            let p = b.alloc_layout(layout.into());
+            let p = b.alloc_layout(layout);
             let q = (&b)
                 .realloc(
                     p,
@@ -1279,8 +1281,8 @@ mod tests {
             // `realloc` will allocate and copy when reallocating anything that
             // wasn't the last allocation.
             let layout = NonZeroLayout::from_size_align(1, 1).unwrap();
-            let p = b.alloc_layout(layout.into());
-            let _ = b.alloc_layout(layout.into());
+            let p = b.alloc_layout(layout);
+            let _ = b.alloc_layout(layout);
             let q = (&b)
                 .realloc(p, layout, NonZeroLayout::from_size_align(2, 1).unwrap())
                 .unwrap();

@@ -20,7 +20,7 @@ path = "benches/benches.rs"
 harness = false
 
 [dependencies]
-alloc-wg = { git = "https://github.com/TimDiekmann/alloc-wg" }
+alloc-wg = { git = "https://github.com/TimDiekmann/alloc-wg", branch="call-by-value" }
 
 [dev-dependencies]
 quickcheck = "0.8.2"

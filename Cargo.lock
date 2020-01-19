@@ -11,7 +11,7 @@ dependencies = [
 [[package]]
 name = "alloc-wg"
 version = "0.7.0"
-source = "git+https://github.com/TimDiekmann/alloc-wg#6594a0e235198db30fd6edde0d56491620d7e2ae"
+source = "git+https://github.com/TimDiekmann/alloc-wg?branch=call-by-value#b003665af40c5619b01c8440239b461aca11175f"
 
 [[package]]
 name = "atty"
@@ -47,7 +47,7 @@ dependencies = [
 name = "bumpalo"
 version = "2.6.0"
 dependencies = [
- "alloc-wg 0.7.0 (git+https://github.com/TimDiekmann/alloc-wg)",
+ "alloc-wg 0.7.0 (git+https://github.com/TimDiekmann/alloc-wg?branch=call-by-value)",
  "criterion 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quickcheck 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -637,7 +637,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
 "checksum aho-corasick 0.7.6 (registry+https://github.com/rust-lang/crates.io-index)" = "58fb5e95d83b38284460a5fda7d6470aa0b8844d283a0b614b8535e880800d2d"
-"checksum alloc-wg 0.7.0 (git+https://github.com/TimDiekmann/alloc-wg)" = "<none>"
+"checksum alloc-wg 0.7.0 (git+https://github.com/TimDiekmann/alloc-wg?branch=call-by-value)" = "<none>"
 "checksum atty 0.2.13 (registry+https://github.com/rust-lang/crates.io-index)" = "1803c647a3ec87095e7ae7acfca019e98de5ec9a7d01343f611cf3152ed71a90"
 "checksum autocfg 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "1d49d90015b3c36167a20fe2810c5cd875ad504b39cff3d4eae7977e6b7c1cb2"
 "checksum bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
